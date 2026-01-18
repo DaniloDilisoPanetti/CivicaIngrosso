@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sicurezza Cattedrale Bari - Panetti Pitagora</title>
+    <title>Sicurezza Basilica San Nicola - Panetti Pitagora</title>
     
     <!-- Librerie Grafiche e Motore React -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,40 +49,39 @@
             ArrowLeft: (props) => <Icon {...props} path={<><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></>} />
         };
 
-        // --- DATI DEL TEAM (Con Carosello Immagini) ---
+        // --- DATI DEL TEAM (Basilica San Nicola - VERSIONE JPG) ---
         const TEAM_MEMBERS = [
             {
                 name: "Diliso Danilo",
-                role: "Contesto Storico e Valore del Bene",
+                role: "Contesto Storico e Reliquie",
                 icon: Icons.History,
-                content: "La Cattedrale di San Sabino non è solo un luogo di culto, ma un tesoro del romanico pugliese. La prima forma di sicurezza è la consapevolezza del valore storico. Analizziamo come proteggere affreschi e strutture millenarie dai danni del tempo e dell'uomo.",
-                imageAlt: "Foto Storiche",
-                // QUI INSERIRE I NOMI DELLE FOTO NELLA CARTELLA
-                images: ["foto2.png", "foto2_b.png", "foto2_c.png"]
+                content: "Dal 1087, la Basilica custodisce le ossa di San Nicola. La sicurezza qui significa proteggere un patrimonio mondiale unico, meta di pellegrinaggio per Cattolici e Ortodossi. Analisi del valore del 'Tesoro di San Nicola' e delle icone sacre.",
+                imageAlt: "Storia Basilica",
+                images: ["foto2.jpg", "foto2_b.jpg", "foto2_c.jpg"]
             },
             {
                 name: "Pasquale Epifania",
-                role: "Sicurezza Strutturale e Restauro",
+                role: "Sicurezza Strutturale Fortificata",
                 icon: Icons.Landmark,
-                content: "La stabilità della pietra. Monitoraggio delle crepe, consolidamento sismico e manutenzione ordinaria. La sicurezza parte dalle fondamenta: come le tecnologie moderne aiutano a preservare la struttura originale senza invasività.",
-                imageAlt: "Foto Struttura",
-                images: ["foto3.png", "foto3_b.png", "foto3_c.png"]
+                content: "La Basilica appare come una fortezza. Analisi delle possenti mura normanne e delle due torri (Torre del Catapano e Torre delle Milizie). Monitoraggio statico della Cripta ipogea e delle colonne romane contro il rischio sismico.",
+                imageAlt: "Struttura Fortificata",
+                images: ["foto3.jpg", "foto3_b.jpg", "foto3_c.jpg"]
             },
             {
                 name: "Pasquale Lorusso",
-                role: "Sistemi di Sorveglianza Attiva",
+                role: "Sorveglianza Cripta e Tesoro",
                 icon: Icons.Eye,
-                content: "L'occhio elettronico sulla Cattedrale. Posizionamento strategico di telecamere CCTV a circuito chiuso, sensori di movimento notturni e sistemi anti-intrusione per proteggere il tesoro della cattedrale e i fedeli.",
-                imageAlt: "Foto Sorveglianza",
-                images: ["foto4.png", "foto4_b.png", "foto4_c.png"]
+                content: "Protezione specifica per la Cripta, cuore pulsante della Basilica. Sistemi di videosorveglianza anti-taccheggio per l'altare d'argento e la tomba del Santo. Controllo flussi durante la Sagra di Maggio per prevenire incidenti.",
+                imageAlt: "Sorveglianza Cripta",
+                images: ["foto4.jpg", "foto4_b.jpg", "foto4_c.jpg"]
             },
             {
                 name: "Gabriele Maffei",
-                role: "Gestione Emergenze e Flussi",
+                role: "Gestione Emergenze su Due Livelli",
                 icon: Icons.AlertTriangle,
-                content: "Piani di evacuazione e gestione della folla. Cosa succede in caso di incendio o malore? Analisi delle vie di fuga, segnaletica di sicurezza e protocolli per le grandi celebrazioni religiose.",
-                imageAlt: "Foto Emergenza",
-                images: ["foto5.png", "foto5_b.png", "foto5_c.png"]
+                content: "La Basilica è complessa: navata superiore e Cripta sotterranea. Il piano di emergenza prevede vie di fuga differenziate per evitare l'effetto 'imbuto' sulle scale. Segnaletica specifica per i pellegrini internazionali.",
+                imageAlt: "Uscite Sicurezza",
+                images: ["foto5.jpg", "foto5_b.jpg", "foto5_c.jpg"]
             }
         ];
 
@@ -98,7 +97,6 @@
                 setCurrent(current === 0 ? images.length - 1 : current - 1);
             };
 
-            // Cambio automatico ogni 4 secondi
             useEffect(() => {
                 const timer = setInterval(nextSlide, 4000);
                 return () => clearInterval(timer);
@@ -108,7 +106,6 @@
                 <div className="relative w-full h-full group">
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent z-10 opacity-60"></div>
                     
-                    {/* Immagine Corrente */}
                     <motion.img 
                         key={current}
                         initial={{ opacity: 0 }}
@@ -118,14 +115,12 @@
                         src={images[current]} 
                         alt={alt} 
                         className="w-full h-full object-cover"
-                        // Fallback se l'immagine non esiste
                         onError={(e) => {
                             e.target.onerror = null; 
-                            e.target.src = "https://placehold.co/800x600/333/FFF?text=Foto+Mancante";
+                            e.target.src = "https://placehold.co/800x600/333/FFF?text=Caricare+fotoX.jpg";
                         }}
                     />
 
-                    {/* Frecce di navigazione */}
                     <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-yellow-600">
                         <Icons.ArrowLeft className="w-6 h-6" />
                     </button>
@@ -133,7 +128,6 @@
                         <Icons.ArrowRight className="w-6 h-6" />
                     </button>
 
-                    {/* Pallini indicatori */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
                         {images.map((_, idx) => (
                             <div 
@@ -164,9 +158,9 @@
                     exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 1, delay: 1 } }}
                     className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 text-white overflow-hidden"
                 >
-                    {/* Sfondo del Cancello: foto1.png */}
+                    {/* SFONDO CANCELLO: foto1.jpg */}
                     <div className="absolute inset-0 z-0 opacity-40 blur-sm">
-                         <img src="foto1.png" className="w-full h-full object-cover" onError={(e) => e.target.style.backgroundColor = '#1a1a1a'} />
+                         <img src="foto1.jpg" className="w-full h-full object-cover" onError={(e) => e.target.style.backgroundColor = '#1a1a1a'} />
                     </div>
                     
                     <div className="absolute inset-0 flex justify-between px-4 md:px-20 pointer-events-none z-10">
@@ -192,7 +186,7 @@
                         <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500 animate-pulse"></div>
                         <Icons.Shield className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
                         <h1 className="text-3xl font-serif text-yellow-100 mb-2">Protocollo Sicurezza</h1>
-                        <p className="text-gray-400 mb-6 font-mono text-sm tracking-wider">CATTEDRALE DI BARI // ACCESSO RISERVATO</p>
+                        <p className="text-gray-400 mb-6 font-mono text-sm tracking-wider">BASILICA SAN NICOLA // ACCESSO RISERVATO</p>
                         
                         <motion.button
                             whileHover={{ scale: 1.05, backgroundColor: "#EAB308", color: "#000" }}
@@ -233,7 +227,6 @@
                             className="w-full lg:w-1/2"
                         >
                             <div className="relative overflow-hidden rounded-2xl border-4 border-gray-800 shadow-2xl bg-gray-900 aspect-video">
-                                {/* QUI C'È IL CAROSELLO */}
                                 <ImageCarousel images={member.images} alt={member.imageAlt} />
                             </div>
                         </motion.div>
@@ -296,11 +289,11 @@
 
                     <div className="relative h-screen flex items-center justify-center overflow-hidden">
                         <div className="absolute inset-0 z-0">
-                            {/* SFONDO HERO: foto1.png */}
-                            <img src="foto1.png" alt="Cattedrale Interno" className="w-full h-full object-cover opacity-30 filter saturate-0" 
+                            {/* SFONDO HERO: foto1.jpg */}
+                            <img src="foto1.jpg" alt="Basilica San Nicola Interno" className="w-full h-full object-cover opacity-30 filter saturate-0" 
                                 onError={(e) => {
                                     e.target.onerror = null; 
-                                    e.target.src = "https://placehold.co/1920x1080/222/FFF?text=Inserisci+foto1.png";
+                                    e.target.src = "https://placehold.co/1920x1080/222/FFF?text=Inserisci+foto1.jpg";
                                 }}
                             />
                             <div className="absolute inset-0 bg-gradient-to-b from-gray-950/90 via-gray-950/40 to-gray-950" />
@@ -313,10 +306,10 @@
                                 </span>
                                 <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 drop-shadow-2xl tracking-tight">
                                     La Sicurezza nella<br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700">Cattedrale di Bari</span>
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700">Basilica San Nicola</span>
                                 </h1>
                                 <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
-                                    Analisi e salvaguardia del patrimonio storico-artistico tra tutela monumentale e incolumità pubblica.
+                                    Tutela del cuore storico ed ecumenico di Bari: protezione dei pellegrini, delle reliquie e della struttura millenaria.
                                 </p>
                             </motion.div>
 
