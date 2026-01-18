@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sicurezza Cattedrale Bari - Panetti Pitagora</title>
+    
+    <!-- Librerie Grafiche e Motore React -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <style>
+        body { background-color: #030712; color: white; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #EAB308; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- CONFIGURAZIONE ---
+        const { useState, useEffect, useRef } = React;
+        const { motion, AnimatePresence, useScroll, useInView } = window.Motion;
+
+        // --- ICONE SVG ---
+        const Icon = ({ path, className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {path}
+            </svg>
+        );
+
+        const Icons = {
+            Shield: (props) => <Icon {...props} path={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></>} />,
+            Lock: (props) => <Icon {...props} path={<><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>} />,
+            Eye: (props) => <Icon {...props} path={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>} />,
+            Users: (props) => <Icon {...props} path={<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>} />,
+            AlertTriangle: (props) => <Icon {...props} path={<><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>} />,
+            ChevronDown: (props) => <Icon {...props} path={<><polyline points="6 9 12 15 18 9"/></>} />,
+            CheckCircle: (props) => <Icon {...props} path={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>} />,
+            Search: (props) => <Icon {...props} path={<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>} />,
+            Landmark: (props) => <Icon {...props} path={<><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></>} />,
+            History: (props) => <Icon {...props} path={<><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></>} />,
+            ArrowRight: (props) => <Icon {...props} path={<><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></>} />,
+            ArrowLeft: (props) => <Icon {...props} path={<><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></>} />
+        };
+
+        // --- DATI DEL TEAM (Con Carosello Immagini) ---
+        const TEAM_MEMBERS = [
+            {
+                name: "Diliso Danilo",
+                role: "Contesto Storico e Valore del Bene",
+                icon: Icons.History,
+                content: "La Cattedrale di San Sabino non è solo un luogo di culto, ma un tesoro del romanico pugliese. La prima forma di sicurezza è la consapevolezza del valore storico. Analizziamo come proteggere affreschi e strutture millenarie dai danni del tempo e dell'uomo.",
+                imageAlt: "Foto Storiche",
+                // QUI INSERIRE I NOMI DELLE FOTO NELLA CARTELLA
+                images: ["foto2.png", "foto2_b.png", "foto2_c.png"]
+            },
+            {
+                name: "Pasquale Epifania",
+                role: "Sicurezza Strutturale e Restauro",
+                icon: Icons.Landmark,
+                content: "La stabilità della pietra. Monitoraggio delle crepe, consolidamento sismico e manutenzione ordinaria. La sicurezza parte dalle fondamenta: come le tecnologie moderne aiutano a preservare la struttura originale senza invasività.",
+                imageAlt: "Foto Struttura",
+                images: ["foto3.png", "foto3_b.png", "foto3_c.png"]
+            },
+            {
+                name: "Pasquale Lorusso",
+                role: "Sistemi di Sorveglianza Attiva",
+                icon: Icons.Eye,
+                content: "L'occhio elettronico sulla Cattedrale. Posizionamento strategico di telecamere CCTV a circuito chiuso, sensori di movimento notturni e sistemi anti-intrusione per proteggere il tesoro della cattedrale e i fedeli.",
+                imageAlt: "Foto Sorveglianza",
+                images: ["foto4.png", "foto4_b.png", "foto4_c.png"]
+            },
+            {
+                name: "Gabriele Maffei",
+                role: "Gestione Emergenze e Flussi",
+                icon: Icons.AlertTriangle,
+                content: "Piani di evacuazione e gestione della folla. Cosa succede in caso di incendio o malore? Analisi delle vie di fuga, segnaletica di sicurezza e protocolli per le grandi celebrazioni religiose.",
+                imageAlt: "Foto Emergenza",
+                images: ["foto5.png", "foto5_b.png", "foto5_c.png"]
+            }
+        ];
+
+        // --- COMPONENTE CAROSELLO ---
+        const ImageCarousel = ({ images, alt }) => {
+            const [current, setCurrent] = useState(0);
+
+            const nextSlide = () => {
+                setCurrent(current === images.length - 1 ? 0 : current + 1);
+            };
+
+            const prevSlide = () => {
+                setCurrent(current === 0 ? images.length - 1 : current - 1);
+            };
+
+            // Cambio automatico ogni 4 secondi
+            useEffect(() => {
+                const timer = setInterval(nextSlide, 4000);
+                return () => clearInterval(timer);
+            }, [current]);
+
+            return (
+                <div className="relative w-full h-full group">
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent z-10 opacity-60"></div>
+                    
+                    {/* Immagine Corrente */}
+                    <motion.img 
+                        key={current}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        src={images[current]} 
+                        alt={alt} 
+                        className="w-full h-full object-cover"
+                        // Fallback se l'immagine non esiste
+                        onError={(e) => {
+                            e.target.onerror = null; 
+                            e.target.src = "https://placehold.co/800x600/333/FFF?text=Foto+Mancante";
+                        }}
+                    />
+
+                    {/* Frecce di navigazione */}
+                    <button onClick={prevSlide} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-yellow-600">
+                        <Icons.ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <button onClick={nextSlide} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity z-20 hover:bg-yellow-600">
+                        <Icons.ArrowRight className="w-6 h-6" />
+                    </button>
+
+                    {/* Pallini indicatori */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                        {images.map((_, idx) => (
+                            <div 
+                                key={idx} 
+                                className={`w-2 h-2 rounded-full transition-all ${idx === current ? 'bg-yellow-500 w-4' : 'bg-gray-500'}`}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="absolute bottom-12 left-6 z-20">
+                         <div className="flex items-center gap-2 text-yellow-500 mb-1">
+                             <Icons.Search className="w-4 h-4" />
+                             <span className="text-xs font-mono uppercase tracking-wider bg-black/60 px-2 py-1 rounded backdrop-blur-sm">Analisi Fotografica</span>
+                         </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- COMPONENTI ---
+
+        const SecurityGate = ({ onOpen }) => {
+            const [isHovered, setIsHovered] = useState(false);
+
+            return (
+                <motion.div 
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 1, delay: 1 } }}
+                    className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 text-white overflow-hidden"
+                >
+                    {/* Sfondo del Cancello: foto1.png */}
+                    <div className="absolute inset-0 z-0 opacity-40 blur-sm">
+                         <img src="foto1.png" className="w-full h-full object-cover" onError={(e) => e.target.style.backgroundColor = '#1a1a1a'} />
+                    </div>
+                    
+                    <div className="absolute inset-0 flex justify-between px-4 md:px-20 pointer-events-none z-10">
+                        {[...Array(10)].map((_, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ height: "100%" }}
+                                exit={{ height: "0%", transition: { duration: 1.5, ease: "easeInOut", delay: i * 0.05 } }}
+                                className="w-2 md:w-6 bg-gradient-to-b from-gray-800 via-gray-500 to-gray-900 shadow-2xl border-x border-black"
+                            />
+                        ))}
+                    </div>
+
+                    <motion.div exit={{ width: "0%", opacity: 0, transition: { duration: 1 } }} className="absolute top-1/3 left-0 w-full h-4 bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900 shadow-xl z-20"></motion.div>
+                    <motion.div exit={{ width: "0%", opacity: 0, transition: { duration: 1 } }} className="absolute bottom-1/3 left-0 w-full h-4 bg-gradient-to-r from-gray-900 via-gray-600 to-gray-900 shadow-xl z-20"></motion.div>
+
+                    <motion.div 
+                        className="z-30 bg-gray-900/95 p-8 rounded-2xl border-2 border-yellow-600 shadow-[0_0_50px_rgba(234,179,8,0.3)] backdrop-blur-md text-center max-w-md mx-4 relative"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 1.5, opacity: 0, filter: "blur(10px)", transition: { duration: 0.8 } }}
+                    >
+                        <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500 animate-pulse"></div>
+                        <Icons.Shield className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+                        <h1 className="text-3xl font-serif text-yellow-100 mb-2">Protocollo Sicurezza</h1>
+                        <p className="text-gray-400 mb-6 font-mono text-sm tracking-wider">CATTEDRALE DI BARI // ACCESSO RISERVATO</p>
+                        
+                        <motion.button
+                            whileHover={{ scale: 1.05, backgroundColor: "#EAB308", color: "#000" }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={onOpen}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            className="px-8 py-3 bg-transparent border-2 border-yellow-500 text-yellow-500 font-bold rounded-full uppercase tracking-widest transition-colors duration-300 flex items-center justify-center gap-2 mx-auto shadow-[0_0_20px_rgba(234,179,8,0.2)]"
+                        >
+                            {isHovered ? <Icons.Lock className="w-5 h-5 open" /> : <Icons.Lock className="w-5 h-5" />}
+                            Sblocca Accesso
+                        </motion.button>
+                    </motion.div>
+                </motion.div>
+            );
+        };
+
+        const Section = ({ member, index }) => {
+            const ref = useRef(null);
+            const isInView = useInView(ref, { once: false, amount: 0.3 });
+            const isEven = index % 2 === 0;
+
+            return (
+                <div ref={ref} className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+                    <div className="absolute inset-0 pointer-events-none opacity-5">
+                        <motion.div 
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                            className="absolute -right-1/4 -top-1/4 w-[800px] h-[800px] border-[40px] border-dashed border-gray-500 rounded-full"
+                        />
+                    </div>
+
+                    <div className={`container mx-auto flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-12 items-center z-10`}>
+                        <motion.div 
+                            initial={{ opacity: 0, x: isEven ? -100 : 100 }}
+                            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: isEven ? -100 : 100 }}
+                            transition={{ duration: 0.8, type: "spring" }}
+                            className="w-full lg:w-1/2"
+                        >
+                            <div className="relative overflow-hidden rounded-2xl border-4 border-gray-800 shadow-2xl bg-gray-900 aspect-video">
+                                {/* QUI C'È IL CAROSELLO */}
+                                <ImageCarousel images={member.images} alt={member.imageAlt} />
+                            </div>
+                        </motion.div>
+
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="w-full lg:w-1/2 text-left"
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-yellow-600/20 rounded-lg text-yellow-500 border border-yellow-600/50">
+                                    <member.icon className="w-8 h-8" />
+                                </div>
+                                <span className="text-sm font-mono text-gray-400 uppercase tracking-widest">Relatore: {member.name}</span>
+                            </div>
+
+                            <h2 className="text-4xl lg:text-5xl font-serif text-white mb-6 leading-tight">{member.role}</h2>
+                            
+                            <div className="p-6 bg-gray-900/60 backdrop-blur-sm rounded-xl border-l-4 border-yellow-500 shadow-lg">
+                                <p className="text-gray-300 text-lg leading-relaxed">{member.content}</p>
+                            </div>
+
+                            <motion.div 
+                                className="mt-8 flex gap-4"
+                                initial={{ opacity: 0 }}
+                                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                                transition={{ delay: 0.6 }}
+                            >
+                                <div className="flex items-center gap-2 text-green-400 bg-green-950/40 px-4 py-2 rounded-full border border-green-800/50">
+                                    <Icons.CheckCircle className="w-5 h-5" />
+                                    <span className="text-sm font-semibold">Stato: Attivo</span>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [gateOpen, setGateOpen] = useState(false);
+            const { scrollYProgress } = useScroll();
+
+            useEffect(() => {
+                if (!gateOpen) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'unset';
+                }
+            }, [gateOpen]);
+
+            return (
+                <div className="min-h-screen">
+                    <motion.div className="fixed top-0 left-0 right-0 h-1 bg-yellow-500 origin-left z-40" style={{ scaleX: scrollYProgress }} />
+
+                    <AnimatePresence>
+                        {!gateOpen && <SecurityGate onOpen={() => setGateOpen(true)} />}
+                    </AnimatePresence>
+
+                    <div className="relative h-screen flex items-center justify-center overflow-hidden">
+                        <div className="absolute inset-0 z-0">
+                            {/* SFONDO HERO: foto1.png */}
+                            <img src="foto1.png" alt="Cattedrale Interno" className="w-full h-full object-cover opacity-30 filter saturate-0" 
+                                onError={(e) => {
+                                    e.target.onerror = null; 
+                                    e.target.src = "https://placehold.co/1920x1080/222/FFF?text=Inserisci+foto1.png";
+                                }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-b from-gray-950/90 via-gray-950/40 to-gray-950" />
+                        </div>
+
+                        <div className="container mx-auto px-6 text-center z-10 mt-20">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 1.5 }}>
+                                <span className="inline-block py-2 px-4 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 text-sm font-bold tracking-widest mb-6 backdrop-blur-md">
+                                    A.S. 2025/2026 - EDUCAZIONE CIVICA
+                                </span>
+                                <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 drop-shadow-2xl tracking-tight">
+                                    La Sicurezza nella<br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-700">Cattedrale di Bari</span>
+                                </h1>
+                                <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
+                                    Analisi e salvaguardia del patrimonio storico-artistico tra tutela monumentale e incolumità pubblica.
+                                </p>
+                            </motion.div>
+
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5, duration: 1 }} className="mt-16 animate-bounce">
+                                <Icons.ChevronDown className="w-12 h-12 mx-auto text-yellow-500/80" />
+                                <span className="text-xs uppercase tracking-widest text-gray-500 mt-2 block">Inizia l'esplorazione</span>
+                            </motion.div>
+                        </div>
+                    </div>
+
+                    <div className="relative z-10 bg-gray-950">
+                        {TEAM_MEMBERS.map((member, index) => (
+                            <Section key={index} member={member} index={index} />
+                        ))}
+                    </div>
+
+                    <footer className="bg-black py-24 border-t border-gray-900 relative overflow-hidden">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-yellow-900 to-transparent" />
+                        <div className="container mx-auto px-6 text-center relative z-10">
+                            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                                <Icons.Users className="w-16 h-16 text-yellow-600/80 mx-auto mb-8" />
+                                <h3 className="text-3xl font-serif text-white mb-12">Il Team di Progetto</h3>
+                                <div className="flex flex-wrap justify-center gap-6 mb-16 max-w-4xl mx-auto">
+                                    {TEAM_MEMBERS.map((m) => (
+                                        <motion.div key={m.name} whileHover={{ y: -5, borderColor: '#ca8a04' }} className="bg-gray-900/50 px-8 py-5 rounded-xl border border-gray-800 transition-all cursor-default flex-1 min-w-[200px]">
+                                            <p className="font-bold text-gray-100 text-lg">{m.name}</p>
+                                            <p className="text-xs text-yellow-600/70 uppercase mt-1 tracking-wider font-mono">Studente</p>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                                <div className="inline-block border-t border-gray-800 pt-8 mt-4">
+                                    <p className="text-gray-500 text-base mb-2 font-light">Corso di <strong className="text-yellow-500">Educazione Civica</strong></p>
+                                    <p className="text-gray-400 text-lg font-serif">Prof.ssa Ingrosso</p>
+                                    <p className="text-gray-700 text-xs mt-8 uppercase tracking-widest">
+                                        I.T.T. Panetti Pitagora &bull; A.S. 2025/2026
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
